@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\ItemData.cs" />
     <Compile Include="Assets\Scripts\MoveAbleHeaderUI.cs" />
+    <Compile Include="Assets\Scripts\InventoryControler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
