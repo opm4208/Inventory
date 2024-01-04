@@ -10,6 +10,7 @@ public class MoveAbleHeaderUI : MonoBehaviour, IPointerDownHandler, IDragHandler
 
     private Vector2 beginPoint;
     private Vector2 MovePoint;
+    public bool itemDrag;
 
     private void Awake()
     {
@@ -19,14 +20,13 @@ public class MoveAbleHeaderUI : MonoBehaviour, IPointerDownHandler, IDragHandler
 
     void IPointerDownHandler.OnPointerDown(UnityEngine.EventSystems.PointerEventData eventData)
     {
-        Debug.Log("down");
         beginPoint = targetUI.position;
         MovePoint = eventData.position;
     }
     
     void IDragHandler.OnDrag(UnityEngine.EventSystems.PointerEventData eventData)
     {
-        Debug.Log("drag");
-        targetUI.position = beginPoint+(eventData.position-MovePoint);
+        if(!itemDrag)
+            targetUI.position = beginPoint+(eventData.position-MovePoint);
     }
 }

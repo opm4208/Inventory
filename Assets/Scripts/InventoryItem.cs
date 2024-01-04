@@ -10,7 +10,7 @@ public class InventoryItem : MonoBehaviour
     public int onGridPositionX;
     public int onGridPositionY;
 
-    internal void Set(ItemData itemData)
+    internal void Set(ItemData itemData, int x, int y)
     {
         this.itemData = itemData;
 
@@ -19,6 +19,8 @@ public class InventoryItem : MonoBehaviour
         Vector2 size = new Vector2();
         size.x = itemData.width * InventoryController.tileSizeWidth;
         size.y = itemData.height * InventoryController.tileSizeHeight;
+        onGridPositionX = x;
+        onGridPositionY = y;
         GetComponent<RectTransform>().sizeDelta = size;
     }
 }
