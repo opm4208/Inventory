@@ -15,6 +15,7 @@ public class InventoryController : MonoBehaviour
     public const float tileSizeHeight = 32;
 
     InventoryItem[,] inventoryItemSlot;
+    public ItemData[] Items;
     private int girdSizeWidth;
     private int girdSizeHeight;
     public bool itemDrag = false;
@@ -52,6 +53,10 @@ public class InventoryController : MonoBehaviour
     private void CreateRandomItem()
     {
         GetItemCheck(itemPrefab.GetComponent<InventoryItem>());
+    }
+ 
+    public void InventoryRoad(int posX, int posY, int itemData, int itemIndex)
+    {
 
     }
 
@@ -93,7 +98,7 @@ public class InventoryController : MonoBehaviour
         return true;
     }
 
-    // 아이템 저장시 초기화 작업
+    // 아이템 생성시 초기화 작업
     private InventoryItem CreateItem(int i, int j, InventoryItem item)
     {
         RectTransform rectTransform = Instantiate(itemPrefab).GetComponent<RectTransform>();
@@ -130,7 +135,7 @@ public class InventoryController : MonoBehaviour
     }
 
     // 아이템이 있던 배열의 데이터를 제거
-    private void DeleteItem(int i, int j, InventoryItem item)
+    private void DeleteItemArray(int i, int j, InventoryItem item)
     {
         for (int itemheight = 0; itemheight < item.itemData.height; itemheight++)
         {
@@ -159,7 +164,7 @@ public class InventoryController : MonoBehaviour
                 moveAbleHeaderUI.itemDrag=true;
                 itemTransform = inventoryItemSlot[tileGridPosition.y, tileGridPosition.x].GetComponent<RectTransform>();
                 InventoryItem inventoryItem = itemTransform.GetComponent<InventoryItem>();
-                DeleteItem(inventoryItem.onGridPositionY, inventoryItem.onGridPositionX, inventoryItem);
+                DeleteItemArray(inventoryItem.onGridPositionY, inventoryItem.onGridPositionX, inventoryItem);
                 itemDrag = true;
             }
         }

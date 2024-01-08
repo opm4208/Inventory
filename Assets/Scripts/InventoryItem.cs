@@ -9,11 +9,11 @@ public class InventoryItem : MonoBehaviour
 
     public int onGridPositionX;
     public int onGridPositionY;
+    public int itemIndex;
 
     internal void Set(ItemData itemData, int x, int y)
     {
         this.itemData = itemData;
-
         GetComponent<Image>().sprite = itemData.itemIcon;
 
         Vector2 size = new Vector2();
