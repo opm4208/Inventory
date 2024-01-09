@@ -10,11 +10,13 @@ using UnityEngine;
 public class DBInventory : MonoBehaviour
 {
     public static MySqlConnection conn;
+    public InventoryController inventoryController;
     string conStr = string.Format("Server={0};Database={1};Uid ={2};Pwd={3};",
             "127.0.0.1", "test", "root", "qkrals123#");
     private void Start()
     {
         conn = new MySqlConnection(conStr);
+        DBRead();
     }
 
     // 게임이 시작되면 db에서 값을 받아 인벤토리에 아이템을 생성
@@ -31,7 +33,7 @@ public class DBInventory : MonoBehaviour
                 while (rdr.Read())
                 {
                     // inventorycontroller의 함수를 호출해 아이템 생성
-                    Debug.Log(rdr["posX"] + " " + rdr["posY"]);
+                    inventoryController.InventoryRoad((int)rdr["posX"], (int)rdr["posY"], (int)rdr["itemID"], (int)rdr["itemIndex"]);
                 }
             }
         }
@@ -51,7 +53,7 @@ public class DBInventory : MonoBehaviour
                 conn.Open();
                 string sql = $"INSERT INTO inventory VALUES({posX},{posY},{itemID},{itemIndex})";
                 MySqlCommand cmd = new MySqlCommand(sql, conn);
-                MySqlDataReader rdr = cmd.ExecuteReader();
+                cmd.ExecuteReader();
             }
         }
         catch (Exception e)
@@ -61,16 +63,16 @@ public class DBInventory : MonoBehaviour
     }
 
     // 아이템 삭제시 db에 해당 index를 가지고 있는 
-    public void DBItemDelete(int index)
+    public void DBItemDelete(int itemIndex)
     {
         try
         {
             using (conn)
             {
                 conn.Open();
-                string sql = $"DELETE FROM inventory WHERE itemIndex={index}";
+                string sql = $"DELETE FROM inventory WHERE itemIndex={itemIndex}";
                 MySqlCommand cmd = new MySqlCommand(sql, conn);
-                MySqlDataReader rdr = cmd.ExecuteReader();
+                cmd.ExecuteReader();
             }
         }
         catch (Exception e)
@@ -89,11 +91,7 @@ public class DBInventory : MonoBehaviour
                 conn.Open();
                 string sql = $"UPDATE inventory SET itemIndex={newindex} WHERE itemIndex={index}";
                 MySqlCommand cmd = new MySqlCommand(sql, conn);
-                MySqlDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                {
-                    Debug.Log(index++);
-                }
+                cmd.ExecuteReader();
             }
         }
         catch (Exception e)
@@ -103,16 +101,16 @@ public class DBInventory : MonoBehaviour
     }
 
     // 인벤토리에서 아이템의 위치 변화시 db에 해당 아이템의 posX, posY값 저장
-    public void DBPositionReSet(int posX, int posY, int index)
+    public void DBPositionReSet(int posX, int posY, int itemIndex)
     {
         try
         {
             using (conn)
             {
                 conn.Open();
-                string sql = $"UPDATE inventory SET posX={posX}, posY={posY} WHERE itemIndex={index}";
+                string sql = $"UPDATE inventory SET posX={posX}, posY={posY} WHERE itemIndex={itemIndex}";
                 MySqlCommand cmd = new MySqlCommand(sql, conn);
-                MySqlDataReader rdr = cmd.ExecuteReader();
+                cmd.ExecuteReader();
             }
         }
         catch (Exception e)

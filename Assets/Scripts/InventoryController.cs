@@ -9,6 +9,7 @@ using static UnityEditor.Progress;
 
 public class InventoryController : MonoBehaviour
 {
+    public DBInventory dbInventory;
     [SerializeField] GameObject itemPrefab;
 
     public const float tileSizeWidth = 32;
@@ -52,28 +53,33 @@ public class InventoryController : MonoBehaviour
 
     private void CreateRandomItem()
     {
-        GetItemCheck(itemPrefab.GetComponent<InventoryItem>());
+        GetItemCheck(Items[UnityEngine.Random.Range(0,3)]);
     }
  
+    // DBì—ì„œ ì•„ì´í…œì •ë³´ë¥¼ ë°›ì•„ ì•„ì´í…œ ìƒì„± í›„ ë°°ì—´ì— ì €ì¥
     public void InventoryRoad(int posX, int posY, int itemData, int itemIndex)
     {
-
+        InventoryItem item = CreateItem(posY, posX, Items[itemData]);
+        item.itemIndex = itemIndex;
+        SaveItem(posY, posX, item);
     }
 
-    // ¾ÆÀÌÅÛÀ» ¾òÀ»½Ã ÀÎº¥Åä¸®¿¡ ¾ÆÀÌÅÛÀÌ µé¾î°¥ ÀÚ¸®°¡ ÀÖ´ÂÁö È®ÀÎ ÈÄ ÀÚ¸®°¡ ÀÖ´Ù¸é ¾ÆÀÌÅÛÀ» ÀúÀå
-    private bool GetItemCheck(InventoryItem item)
+    // ì•„ì´í…œì„ ì–»ì„ì‹œ ì¸ë²¤í† ë¦¬ì— ì•„ì´í…œì´ ë“¤ì–´ê°ˆ ìë¦¬ê°€ ìˆëŠ”ì§€ í™•ì¸ í›„ ìë¦¬ê°€ ìˆë‹¤ë©´ ì•„ì´í…œì„ ì €ì¥
+    private bool GetItemCheck(ItemData item)
     {
-        // ¼¼·Î
-        for(int  i = 0; i < inventoryItemSlot.GetLength(0); i++)
+        // ì„¸ë¡œ
+        for (int  i = 0; i < inventoryItemSlot.GetLength(0); i++)
         {
-            // °¡·Î
-            for(int j = 0; j<inventoryItemSlot.GetLength(1); j++) 
+            // ê°€ë¡œ
+            for (int j = 0; j<inventoryItemSlot.GetLength(1); j++) 
             {
                 if (inventoryItemSlot[i, j] == null)
                 {
-                    if (EmptyCheck(j, i, item.itemData.width, item.itemData.height))
+                    if (EmptyCheck(j, i, item.width, item.height))
                     {
-                        SaveItem(i, j, CreateItem(i, j, item));
+                        InventoryItem inventoryItem = CreateItem(i, j, item);
+                        SaveItem(i, j, inventoryItem);
+                        dbInventory.DBSave(j, i, item.itemID, inventoryItem.itemIndex);
                         return true;
                     }
                 }
@@ -81,15 +87,15 @@ public class InventoryController : MonoBehaviour
         }
         return false;
     }
-    private bool EmptyCheck(int width, int height, int itemwidth, int itemheight)
+    private bool EmptyCheck(int width, int height, int itemWidth, int itemHeight)
     {
-        // ÀÎº¥Åä¸® ¹üÀ§¸¦ ³Ñ´Â ÀÎµ¦½º¸¦ Å½»öÇÏ´Â°É ¸·±âÀ§ÇÔ
-        if(width + itemwidth > inventoryItemSlot.GetLength(1) || height + itemheight > inventoryItemSlot.GetLength(0))
+        // ì¸ë²¤í† ë¦¬ ë²”ìœ„ë¥¼ ë„˜ëŠ” ì¸ë±ìŠ¤ë¥¼ íƒìƒ‰í•˜ëŠ”ê±¸ ë§‰ê¸°ìœ„í•¨
+        if (width + itemWidth > inventoryItemSlot.GetLength(1) || height + itemHeight > inventoryItemSlot.GetLength(0))
             return false;
-        // ¾ÆÀÌÅÛÀÇ Å©±â¸¸Å­ Å½»öÇÏ¿© nullÀÌ ¾Æ´Ï¸é ½ÇÆĞ¸¦ ¹İÈ¯
-        for (int i = 0; i < itemheight; i++)
+        // ì•„ì´í…œì˜ í¬ê¸°ë§Œí¼ íƒìƒ‰í•˜ì—¬ nullì´ ì•„ë‹ˆë©´ ì‹¤íŒ¨ë¥¼ ë°˜í™˜
+        for (int i = 0; i < itemHeight; i++)
         {
-            for (int j = 0; j < itemwidth; j++)
+            for (int j = 0; j < itemWidth; j++)
             {
                 if (inventoryItemSlot[height + i, width + j] != null)
                     return false;
@@ -98,32 +104,60 @@ public class InventoryController : MonoBehaviour
         return true;
     }
 
-    // ¾ÆÀÌÅÛ »ı¼º½Ã ÃÊ±âÈ­ ÀÛ¾÷
-    private InventoryItem CreateItem(int i, int j, InventoryItem item)
+    // ì•„ì´í…œ ìƒì„±ì‹œ ì´ˆê¸°í™” ì‘ì—…
+    private InventoryItem CreateItem(int i, int j, ItemData item)
     {
         RectTransform rectTransform = Instantiate(itemPrefab).GetComponent<RectTransform>();
         rectTransform.SetParent(transform);
-        rectTransform.GetComponent<InventoryItem>().Set(item.itemData, j, i);
+        rectTransform.GetComponent<InventoryItem>().Set(item, transform.childCount - 1, j, i);
 
         return rectTransform.GetComponent<InventoryItem>();
     }
 
+    private void DeleteItem(int itemIndex)
+    {
+        // dbì—ì„œ í•´ë‹¹ ì•„ì´í…œ ì‚­ì œ
+        dbInventory.DBItemDelete(itemIndex);
+        // í•´ë‹¹ ì•„ì´í…œ ë°°ì—´ì—ì„œ nullë¡œ ë³€ê²½
+        InventoryItem item = itemTransform.GetComponent<InventoryItem>();
+        DeleteItemArray(item.onGridPositionY, item.onGridPositionX, item);
+        // í•´ë‹¹ ì•„ì´í…œ ê²Œì„ ì˜¤ë¸Œì íŠ¸ ì‚­ì œ
+        Destroy(item.gameObject);
+        // ë‚¨ì€ ì•„ì´í…œ index ì¬ì„¤ì •
+        StartCoroutine(ReIndex());
+    }
+
+    IEnumerator ReIndex()
+    {
+        yield return new WaitForSeconds(0.1f);
+        int index = 0;
+        foreach (InventoryItem item in transform.GetComponentsInChildren<InventoryItem>())
+        {
+            if (item.itemIndex != index)
+            {
+                dbInventory.DBIndexReSet(item.itemIndex, index);
+                item.itemIndex = index;
+            }
+            index++;
+        }
+    }
+
     private void SaveItem(int i, int j, InventoryItem item)
     {
-        //¾ÆÀÌÅÛ À§Ä¡ º¯°æ
+        //ì•„ì´í…œ ìœ„ì¹˜ ë³€ê²½
         PlaceItem(i, j, item);
 
-        // ÀÎº¥Åä¸® ¹è¿­¿¡ ¾ÆÀÌÅÛ ÀúÀå
+        // ì¸ë²¤í† ë¦¬ ë°°ì—´ì— ì•„ì´í…œ ì €ì¥
         for (int itemheight = 0; itemheight < item.itemData.height; itemheight++)
         {
             for (int itemwidth = 0; itemwidth < item.itemData.width; itemwidth++)
             {
                 inventoryItemSlot[i + itemheight, j + itemwidth] = item;
-                Debug.Log(inventoryItemSlot[i + itemheight, j + itemwidth]);
             }
         }
     }
 
+    // ì•„ì´í…œì˜ ìœ„ì¹˜ë¥¼ ë³€ê²½í•œë‹¤.
     private void PlaceItem(int i, int j, InventoryItem item)
     {
         Vector2 position = new Vector2();
@@ -134,7 +168,7 @@ public class InventoryController : MonoBehaviour
         item.GetComponent<RectTransform>().localPosition = position;
     }
 
-    // ¾ÆÀÌÅÛÀÌ ÀÖ´ø ¹è¿­ÀÇ µ¥ÀÌÅÍ¸¦ Á¦°Å
+    // ì•„ì´í…œì´ ìˆë˜ ë°°ì—´ì˜ ë°ì´í„°ë¥¼ ì œê±°
     private void DeleteItemArray(int i, int j, InventoryItem item)
     {
         for (int itemheight = 0; itemheight < item.itemData.height; itemheight++)
@@ -142,7 +176,6 @@ public class InventoryController : MonoBehaviour
             for (int itemwidth = 0; itemwidth < item.itemData.width; itemwidth++)
             {
                 inventoryItemSlot[i + itemheight, j + itemwidth] = null;
-
             }
         }
     }
@@ -150,42 +183,54 @@ public class InventoryController : MonoBehaviour
     private void LeftMouseButtonPress()
     {
         Vector2Int tileGridPosition = GetTileGridPosition(Input.mousePosition);
-
-        // ¸¶¿ì½ºÀÇ ÁÂÇ¥°¡ ÀÎº¥Åä¸® ¾È¿¡ ÀÖÀ¸¸é ÀÛµ¿
-        if (tileGridPosition.x >= inventoryItemSlot.GetLength(1) || tileGridPosition.y >= inventoryItemSlot.GetLength(0))
-            return;
-        // ¸¸¾à ¸¶¿ì½º°¡ °¡¸®Å°´Â °ø°£¿¡ ¾ÆÀÌÅÛÀÌ ÀÖÀ»½Ã
-        if (inventoryItemSlot[tileGridPosition.y, tileGridPosition.x] != null)
+        // ì•„ì´í…œì„ ì„ íƒí•˜ì§€ ì•Šì•˜ì„ì‹œ
+        if (!itemDrag)
         {
-            // ¸¸¾à ¾ÆÀÌÅÛÀ» ÀÌµ¿½ÃÅ°°í ÀÖÁö ¾ÊÀ¸¸é
-            if (!itemDrag)
+            Debug.Log("X"+tileGridPosition.x);
+            Debug.Log("Y" + tileGridPosition.y);
+            // ì¸ë²¤í† ë¦¬ ë²”ìœ„ ë°–ì„ í´ë¦­í•˜ë©´ return
+            if (tileGridPosition.x >= inventoryItemSlot.GetLength(1) || tileGridPosition.x < 0 || tileGridPosition.y >= inventoryItemSlot.GetLength(0) || tileGridPosition.y < 0)
+                return;
+            // ë§Œì•½ ë§ˆìš°ìŠ¤ê°€ ê°€ë¦¬í‚¤ëŠ” ê³µê°„ì— ì•„ì´í…œì´ ìˆì„ì‹œ
+            if (inventoryItemSlot[tileGridPosition.y, tileGridPosition.x] != null)
             {
-                // ÀÌµ¿½ÃÅ³ ¾ÆÀÌÅÛÀÇ Æ®·£½ºÆßÀ» ÀúÀå
-                moveAbleHeaderUI.itemDrag=true;
+                // ì´ë™ì‹œí‚¬ ì•„ì´í…œì˜ íŠ¸ëœìŠ¤íŒì„ ì €ì¥
+                moveAbleHeaderUI.itemDrag = true;
                 itemTransform = inventoryItemSlot[tileGridPosition.y, tileGridPosition.x].GetComponent<RectTransform>();
                 InventoryItem inventoryItem = itemTransform.GetComponent<InventoryItem>();
                 DeleteItemArray(inventoryItem.onGridPositionY, inventoryItem.onGridPositionX, inventoryItem);
                 itemDrag = true;
             }
         }
+        // ì•„ì´í…œì„ ì„ íƒí–ˆì„ì‹œ
         else
         {
-            // ¸¸¾à ¾ÆÀÌÅÛÀ» ÀÌµ¿½ÃÅ°°í ÀÖÀ¸¸é
-            if (itemDrag)
+            // ì¸ë²¤í† ë¦¬ ë²”ìœ„ ë°–ì„ í´ë¦­ì‹œ ì•„ì´í…œ ì‚­ì œ
+            if (tileGridPosition.x >= inventoryItemSlot.GetLength(1) || tileGridPosition.x < 0 || tileGridPosition.y >= inventoryItemSlot.GetLength(0) || tileGridPosition.y < 0)
+            {
+                DeleteItem(itemTransform.GetComponent<InventoryItem>().itemIndex);
+                moveAbleHeaderUI.itemDrag = false;
+                itemTransform = null;
+                itemDrag = false;
+            }
+            else
             {
                 ItemData itemData = itemTransform.GetComponent<InventoryItem>().itemData;
+                // í´ë¦­í•œ ê³µê°„ì´ ì•„ì´í…œì´ ì—†ìœ¼ë©´ ê·¸ ìœ„ì¹˜ë¡œ ì´ë™
                 if (EmptyCheck(tileGridPosition.x, tileGridPosition.y, itemData.width, itemData.height))
                 {
                     SaveItem(tileGridPosition.y, tileGridPosition.x, itemTransform.GetComponent<InventoryItem>());
+                    dbInventory.DBPositionReSet(tileGridPosition.x, tileGridPosition.y, itemTransform.GetComponent<InventoryItem>().itemIndex);
                     moveAbleHeaderUI.itemDrag = false;
                     itemTransform = null;
                     itemDrag = false;
                 }
             }
         }
+
     }
 
-    // ¸¶¿ì½ºÀÇ ÁÂÇ¥¸¦ ÀÎº¥Åä¸® Ä­¿¡ ¸Â°Ô °è»ê
+    // ë§ˆìš°ìŠ¤ì˜ ì¢Œí‘œë¥¼ ì¸ë²¤í† ë¦¬ ì¹¸ì— ë§ê²Œ ê³„ì‚°
     private Vector2Int GetTileGridPosition(Vector2 mousePosition)
     {
         Vector2Int tileGridPosition = new Vector2Int();

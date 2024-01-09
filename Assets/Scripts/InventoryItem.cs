@@ -11,7 +11,7 @@ public class InventoryItem : MonoBehaviour
     public int onGridPositionY;
     public int itemIndex;
 
-    internal void Set(ItemData itemData, int x, int y)
+    internal void Set(ItemData itemData,int index , int x, int y)
     {
         this.itemData = itemData;
         GetComponent<Image>().sprite = itemData.itemIcon;
@@ -22,5 +22,6 @@ public class InventoryItem : MonoBehaviour
         onGridPositionX = x;
         onGridPositionY = y;
         GetComponent<RectTransform>().sizeDelta = size;
+        itemIndex = index;
     }
 }
