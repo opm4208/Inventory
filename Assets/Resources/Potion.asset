@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Potion
   m_EditorClassIdentifier: 
   width: 1
-  height: 2
-  itemID: 1
-  itemIcon: {fileID: 21300000, guid: 1abf97e842d30854daca5e0bdd706d50, type: 3}
+  height: 1
+  itemID: 4
+  itemIcon: {fileID: 21300000, guid: 9f39bedbc179aed4088082040308e213, type: 3}

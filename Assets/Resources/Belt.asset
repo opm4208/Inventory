@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fd6d7427673c53f4e941aa9dcd458f29, type: 3}
-  m_Name: Bow
+  m_Name: Belt
   m_EditorClassIdentifier: 
-  width: 3
-  height: 2
-  itemID: 2
-  itemIcon: {fileID: 21300000, guid: ffd18a95e498bac4ba18636e74208f89, type: 3}
+  width: 2
+  height: 1
+  itemID: 1
+  itemIcon: {fileID: 21300000, guid: 164491c0007fd0d46a69050892d997f9, type: 3}

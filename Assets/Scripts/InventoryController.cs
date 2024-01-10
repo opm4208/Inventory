@@ -53,7 +53,7 @@ public class InventoryController : MonoBehaviour
 
     private void CreateRandomItem()
     {
-        GetItemCheck(Items[UnityEngine.Random.Range(0,3)]);
+        GetItemCheck(Items[UnityEngine.Random.Range(0,Items.Length)]);
     }
  
     // DB에서 아이템정보를 받아 아이템 생성 후 배열에 저장
@@ -215,9 +215,13 @@ public class InventoryController : MonoBehaviour
             }
             else
             {
-                ItemData itemData = itemTransform.GetComponent<InventoryItem>().itemData;
+                InventoryItem inventoryItem = itemTransform.GetComponent<InventoryItem>();
+                ItemData itemData = inventoryItem.itemData;
+                Debug.Log(tileGridPosition.x);
+                Debug.Log(tileGridPosition.y);
                 // 클릭한 공간이 아이템이 없으면 그 위치로 이동
-                if (EmptyCheck(tileGridPosition.x, tileGridPosition.y, itemData.width, itemData.height))
+                if (EmptyCheck(tileGridPosition.x, tileGridPosition.y, itemData.width, itemData.height) ||
+                    (tileGridPosition.x== inventoryItem.onGridPositionX && tileGridPosition.y == inventoryItem.onGridPositionY))
                 {
                     SaveItem(tileGridPosition.y, tileGridPosition.x, itemTransform.GetComponent<InventoryItem>());
                     dbInventory.DBPositionReSet(tileGridPosition.x, tileGridPosition.y, itemTransform.GetComponent<InventoryItem>().itemIndex);

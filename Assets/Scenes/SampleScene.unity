@@ -406,11 +406,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84f5712507edc5548aa681262223736e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dbInventory: {fileID: 262724704}
   itemPrefab: {fileID: 3909670160285796282, guid: 532ea444f918a4345bdfb3c5dff508b4, type: 3}
   Items:
-  - {fileID: 11400000, guid: 0f34783a52060ea45868e5f676ea49f5, type: 2}
-  - {fileID: 11400000, guid: 5886d8cbd3ed9c94abb9133963a51869, type: 2}
+  - {fileID: 11400000, guid: af5a940e79501d54caf199f8a6cd99ff, type: 2}
+  - {fileID: 11400000, guid: 74b70d38baa09b44b9e3e4ce7bee53f6, type: 2}
   - {fileID: 11400000, guid: 871cc384740d93d4b85353a30aaa3e81, type: 2}
+  - {fileID: 11400000, guid: 127151dfcf779e8489db197e7db3dd67, type: 2}
+  - {fileID: 11400000, guid: 5886d8cbd3ed9c94abb9133963a51869, type: 2}
+  - {fileID: 11400000, guid: 0f34783a52060ea45868e5f676ea49f5, type: 2}
+  - {fileID: 11400000, guid: 60b13a0084926914396719b13d5d4512, type: 2}
+  - {fileID: 11400000, guid: 2fb604140f4021c478036eb5103289f9, type: 2}
   itemDrag: 0
 --- !u!114 &262724704
 MonoBehaviour:
@@ -424,6 +430,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9298fdf7aebf64d41a21a7db13491ae8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inventoryController: {fileID: 262724703}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0

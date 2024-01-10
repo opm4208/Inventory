@@ -10,8 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fd6d7427673c53f4e941aa9dcd458f29, type: 3}
-  m_Name: Diamond
+  m_Name: Scroll
   m_EditorClassIdentifier: 
   width: 1
   height: 1
-  itemIcon: {fileID: 21300000, guid: fde28bb7f1ba8a54d991a14079224ec8, type: 3}
+  itemID: 5
+  itemIcon: {fileID: 21300000, guid: 6c804d76a31ba5248a9d4308a911f7d1, type: 3}
